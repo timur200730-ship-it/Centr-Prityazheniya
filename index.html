@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0f1117">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Центр Притяжения — Асбест</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">✨</div>
+      <div class="brand-text">
+        <h1>Центр Притяжения</h1>
+        <p>г. Асбест, ул. Уральская, 54</p>
+      </div>
+    </div>
+    <button id="pwaInstallBtn" class="install-btn">📲 Установить</button>
+  </header>
+
+  <main class="container">
+    <!-- ВКЛАДКА 1: АФИША -->
+    <section id="tab-afisha" class="tab-section active">
+      <div class="calendar-box">
+        <div class="cal-header">
+          <span class="cal-title serif">Ноябрь 2026</span>
+          <button class="cal-reset" onclick="selectDate(null)">Показать весь месяц</button>
+        </div>
+        <div class="cal-weekdays">
+          <span>ПН</span><span>ВТ</span><span>СР</span><span>ЧТ</span><span>ПТ</span><span>СБ</span><span>ВС</span>
+        </div>
+        <div id="calendarGrid" class="cal-grid"></div>
+      </div>
+
+      <div class="chips-scroll" id="categoryChips">
+        <button class="chip active" onclick="setCategory('all')">Все направления</button>
+        <button class="chip" onclick="setCategory('Психология и игры')">Психология и игры</button>
+        <button class="chip" onclick="setCategory('Здоровье и танцы')">Здоровье и танцы</button>
+        <button class="chip" onclick="setCategory('Творчество и МК')">Творчество и МК</button>
+        <button class="chip" onclick="setCategory('Детям и наука')">Детям и наука</button>
+        <button class="chip" onclick="setCategory('Медитации')">Медитации</button>
+      </div>
+
+      <div id="eventsContainer"></div>
+    </section>
+
+    <!-- ВКЛАДКА 2: ИНТЕРАКТИВ -->
+    <section id="tab-interactive" class="tab-section">
+      <div class="interactive-card">
+        <span class="event-badge">Коучинг и самопознание</span>
+        <h2 style="color:var(--gold); margin:8px 0 4px;">Метафорическая карта дня</h2>
+        <p style="font-size:0.84rem; color:var(--text-muted);">Сформулируй внутренний запрос и нажми на карту, чтобы получить послание на сегодня</p>
+
+        <div class="mac-card-deck" id="macCard" onclick="flipMacCard()">
+          <div class="mac-card-inner">
+            <div class="mac-face mac-front">
+              <div class="mac-front-icon">🌟</div>
+              <h3 style="color:var(--gold);">Центр Притяжения</h3>
+              <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">Нажми, чтобы открыть карту</p>
+            </div>
+            <div class="mac-face mac-back">
+              <div id="macSymbol" style="font-size:2.4rem; margin-bottom:6px;"></div>
+              <h4 id="macTitle" class="serif" style="color:var(--gold); font-size:1.05rem; margin-bottom:8px;"></h4>
+              <p id="macMetaphor" style="font-size:0.78rem; color:var(--text); margin-bottom:10px;"></p>
+              <div style="border-top:1px solid var(--border); padding-top:8px; font-size:0.78rem; color:var(--gold-light); font-style:italic;" id="macQuestion"></div>
+            </div>
+          </div>
+        </div>
+        <button class="btn btn-outline" onclick="drawNewMacCard()">🔄 Вытянуть другую карту</button>
+      </div>
+
+      <div class="interactive-card">
+        <span class="event-badge">Звуковая гармонизация</span>
+        <h2 style="color:var(--gold); margin:8px 0 4px;">Виртуальная Поющая Чаша</h2>
+        <p style="font-size:0.84rem; color:var(--text-muted);">Коснись чаши, чтобы услышать исцеляющую вибрацию (432 Гц) и сделать 3 глубоких вдоха</p>
+        <div id="bowlBtn" class="bowl-circle" onclick="playSingingBowl()">🥣</div>
+        <p id="breathHint" style="font-size:0.82rem; color:var(--gold-light);">Нажми на чашу для настройки дыхания</p>
+      </div>
+
+      <div class="interactive-card">
+        <span class="event-badge">Навигатор</span>
+        <h2 style="color:var(--gold); margin:8px 0 4px;">Какая встреча нужна тебе сейчас?</h2>
+        <p style="font-size:0.84rem; color:var(--text-muted); margin-bottom:14px;">Выбери своё состояние, и мы подберём направление:</p>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button class="btn btn-outline" onclick="recommendTrack('relax')">🌿 Хочу снять стресс и замедлиться</button>
+          <button class="btn btn-outline" onclick="recommendTrack('psy')">🧭 Хочу разобраться в отношениях и сценариях</button>
+          <button class="btn btn-outline" onclick="recommendTrack('craft')">🧶 Хочу создать красоту своими руками</button>
+          <button class="btn btn-outline" onclick="recommendTrack('kids')">♟ Ищу полезное развитие для ребёнка</button>
+        </div>
+        <div id="quizResult" style="margin-top:14px; display:none; padding:12px; border-radius:12px; background:rgba(212,175,55,0.12); border:1px solid var(--gold); text-align:left; font-size:0.85rem;"></div>
+      </div>
+    </section>
+
+    <!-- ВКЛАДКА 3: МАСТЕРА -->
+    <section id="tab-masters" class="tab-section">
+      <div class="calendar-box">
+        <h2 style="color:var(--gold); margin-bottom:6px;">Мастера пространства</h2>
+        <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;">Прямые контакты ведущих «Центра Притяжения»:</p>
+        <div id="mastersList"></div>
+      </div>
+
+      <div class="calendar-box">
+        <h2 style="color:var(--gold); margin-bottom:10px;">Памятка гостя</h2>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">📍 <strong>Адрес:</strong> г. Асбест, ул. Уральская, 54.</p>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">☕ <strong>Формат:</strong> Все материалы для творческих МК уже включены в стоимость.</p>
+        <p style="font-size:0.85rem; color:var(--text-muted);">🧘‍♀️ <strong>Для практик:</strong> Рекомендуем удобную свободную одежду.</p>
+      </div>
+    </section>
+
+    <!-- ВКЛАДКА 4: МОЙ ПЛАН И АДМИНКА -->
+    <section id="tab-admin" class="tab-section">
+      <div class="calendar-box">
+        <h2 style="color:var(--gold); margin-bottom:8px;">Мои выбранные встречи</h2>
+        <div id="savedEventsList"></div>
+      </div>
+
+      <div class="calendar-box" id="adminLockBox">
+        <h3 style="color:var(--gold); margin-bottom:8px;">🔒 Управление расписанием</h3>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">Пин-код организатора (по умолчанию: <strong>2026</strong>)</p>
+        <div style="display:flex; gap:8px;">
+          <input type="password" id="adminPinInput" class="form-control" placeholder="Пин-код...">
+          <button class="btn btn-gold" onclick="unlockAdmin()">Войти</button>
+        </div>
+      </div>
+
+      <div class="calendar-box" id="adminPanelBox" style="display:none;">
+        <h2 style="color:var(--gold); margin-bottom:6px;">⚡ Конструктор анонсов</h2>
+        <div class="form-group">
+          <label>1. Быстрый шаблон рубрики</label>
+          <select id="tplSelect" class="form-control" onchange="applyTemplate()">
+            <option value="">— Выбрать шаблон или заполнить вручную —</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Название рубрики / курса</label>
+          <input type="text" id="evTitle" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Конкретная тема встречи или изделие</label>
+          <input type="text" id="evTopic" class="form-control">
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Дата</label>
+            <input type="date" id="evDate" class="form-control" value="2026-11-09">
+          </div>
+          <div class="form-group">
+            <label>Время</label>
+            <input type="text" id="evTime" class="form-control">
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Категория</label>
+            <select id="evCat" class="form-control">
+              <option value="Психология и игры">Психология и игры</option>
+              <option value="Здоровье и танцы">Здоровье и танцы</option>
+              <option value="Творчество и МК">Творчество и МК</option>
+              <option value="Детям и наука">Детям и наука</option>
+              <option value="Медитации">Медитации</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Стоимость</label>
+            <input type="text" id="evPrice" class="form-control">
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label>Мастер</label>
+            <input type="text" id="evMaster" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>Телефон</label>
+            <input type="text" id="evPhone" class="form-control">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Описание</label>
+          <textarea id="evDesc" rows="3" class="form-control"></textarea>
+        </div>
+
+        <button class="btn btn-gold" style="width:100%; margin-bottom:12px;" onclick="addEventFromAdmin()">➕ Добавить мероприятие</button>
+
+        <div style="display:flex; gap:8px; border-top:1px solid var(--border); padding-top:12px;">
+          <button class="btn btn-outline" onclick="exportDataJsForGitHub()">💾 Скачать data.js для GitHub</button>
+          <button class="btn btn-outline" onclick="resetDefaultEvents()">🔄 Сброс</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="bookingModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 id="modalEvTitle" style="color:var(--gold); margin-bottom:4px;">Запись на встречу</h3>
+      <p id="modalEvSub" style="font-size:0.82rem; color:var(--text-muted); margin-bottom:14px;"></p>
+      <div class="form-group">
+        <label>Ваше имя</label>
+        <input type="text" id="clientName" class="form-control" placeholder="Как к вам обращаться?">
+      </div>
+      <div class="form-group">
+        <label>Комментарий</label>
+        <input type="text" id="clientNote" class="form-control" placeholder="Вопрос или пожелание">
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+        <button class="btn btn-gold" onclick="sendBookingWhatsApp()">💬 Отправить заявку в WhatsApp</button>
+        <a id="directCallBtn" href="#" class="btn btn-outline">📞 Позвонить мастеру напрямую</a>
+        <button class="btn" style="background:transparent; color:var(--text-muted);" onclick="closeBookingModal()">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn active" onclick="switchTab('afisha', this)">
+      <span class="icon">📅</span><span>Афиша</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('interactive', this)">
+      <span class="icon">🃏</span><span>Карта дня</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('masters', this)">
+      <span class="icon">🌟</span><span>Мастера</span>
+    </button>
+    <button class="nav-btn" onclick="switchTab('admin', this)">
+      <span class="icon">⚙️</span><span>Мой план</span>
+    </button>
+  </nav>
+
+  <script src="./data.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
